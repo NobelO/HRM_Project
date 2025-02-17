@@ -1,0 +1,198 @@
+#include "LCD.h"
+
+
+
+//extern volatile uint8_t hold_value = 0;
+
+void lcd_delayus(unsigned int us)		//blocking delay for LCD, argument is approximate number of micro-seconds to delay
+{
+	unsigned char i;
+	while(us--)
+	{
+		for(i=0; i<SystemCoreClock/4000000; i++){__NOP();}
+	}
+}
+
+void WaitLcdBusy(void)
+{
+	//lcd_delayus(3000);		//3ms blocking delay
+	
+	LCD_PORT->BSRR = LCD_RW_pin;  // RW = 1 (Read Mode)
+  LCD_PORT->BSRR = ~LCD_RS_pin; // RS = 0 (Command Mode)
+
+	do {LCD_PORT->BSRR = LCD_E_pin;  // E = 1 (Enable LCD)
+			__NOP();  // Small delay
+			__NOP();
+	}
+	while ((LCD_PORT->IDR & LCD_D0_pin) != 0);  // Loop while DB7 (Busy Flag) is HIGH
+
+	LCD_PORT->BSRR = ~LCD_E_pin;  // E = 0 (Disable LCD)
+	LCD_PORT->BSRR = ~LCD_RW_pin; // RW = 0 (Write Mode)
+	
+	//CRYP_SR |= (1<<4);   // P756
+	//LTDC->IER |= (1<<4); //P501
+}
+
+void set_LCD_data(unsigned char d)
+{
+	LCD_PORT->BSRR=(0xf<<(LCD_D0_pin+16));	//clear data lines
+	LCD_PORT->BSRR=(d<<LCD_D0_pin);					//put data on lines
+}
+
+void LCD_Write_String(const char *str) {
+		LCD_PORT->BSRR=(0xf<<(LCD_D0_pin+16));	//clear data lines
+    while (*str) {
+			LCD_PORT->BSRR=(*str);  
+			//LCD_Write_Char(*str++); // Write each character
+    }
+}
+
+void LCD_strobe(void)		//10us high pulse on LCD enable line
+{
+	lcd_delayus(10);
+	set_LCD_E();
+	lcd_delayus(10);
+	clr_LCD_E();
+}
+
+
+void cmdLCD(unsigned char cmd)		//sends a byte to the LCD control register
+{
+	WaitLcdBusy();				//wait for LCD to be not busy
+	clr_LCD_RS();					//control command
+	clr_LCD_RW();					//write command
+	set_LCD_data(cmd);		//set data on bus
+	LCD_strobe();					//apply command
+}
+
+void putLCD(unsigned char put)	//sends a char to the LCD display
+{
+	WaitLcdBusy();				//wait for LCD to be not busy
+	set_LCD_RS();					//text command
+	clr_LCD_RW();					//write command
+	//if (!hold_value)
+	{  
+		set_LCD_data(put);		//set data on bus
+  }
+	LCD_strobe();					//apply command
+}
+
+void putStrLCD(int *str)	//sends a char to the LCD display
+{
+	WaitLcdBusy();				//wait for LCD to be not busy
+	set_LCD_RS();					//text command
+	clr_LCD_RW();					//write command
+	
+	//if (!hold_value)
+	{  
+       set_LCD_data(*str++);		//set data on bus
+  }
+	
+	LCD_strobe();					//apply command
+}
+
+void initLCD(void)
+{
+		SystemCoreClockUpdate();
+		RCC->AHB1ENR|=RCC_AHB1ENR_GPIODEN;	//enable LCD port clock
+	
+	
+			//CONFIG LCD GPIO PINS
+		LCD_PORT->MODER&=~(					//clear pin direction settings
+			(3u<<(2*LCD_RS_pin))
+			|(3u<<(2*LCD_RW_pin))
+			|(3u<<(2*LCD_E_pin))
+			|(0xff<<(2*LCD_D0_pin))				//CLEAR D0-D7 TO CONFIGURE AS OUTPUTS
+		);
+	
+	
+		LCD_PORT->MODER|=(				//reset pin direction settings to digital outputs
+			(1u<<(2*LCD_RS_pin))
+			|(1u<<(2*LCD_RW_pin))
+			|(1u<<(2*LCD_E_pin))
+			|(0x55<<(2*LCD_D0_pin))				//SET D0-D7 TO CONFIGURE AS OUTPUTS
+		);
+	
+	LCD_PORT->OTYPER&=~(					//CONFIGURE CONTROL LINES AS PUSH-PULL FOR DIRECT CONTROL
+			(1UL<<(LCD_RS_pin))
+			|(1UL<<(LCD_RW_pin))
+			|(1UL<(LCD_E_pin))
+		);
+		
+	LCD_PORT->OTYPER |= (0xf<<(LCD_D0_pin));				//CONFIGURE D0-D7 AS OPEN-DRAIN FOR DIRECT CONTROL
+	
+	LCD_PORT->PUPDR &= ~(0xff<<(2*LCD_D0_pin));				//CLEAR D0-D7 TO CONFIGURE AS PULL-UP
+	
+	LCD_PORT->PUPDR |= (0x55<<(2*LCD_D0_pin));				//SET D0-D7 TO CONFIGURE AS PULL-UP
+
+	
+			//LCD INIT COMMANDS
+	clr_LCD_RS();					//all lines default low
+	clr_LCD_RW();
+	clr_LCD_E();
+	
+	lcd_delayus(25000);		//25ms startup delay
+	cmdLCD(0x33);	//Function set: 2 Line, 8-bit, 5x7 dots
+	cmdLCD(0x32);	//SWITCH TO 4-BIT MODE
+	cmdLCD(0x28);	//Function set: 2 Line, 4-bit, 5x7 dots
+	cmdLCD(0x0c);	//Display on, Cursor blinking command
+	cmdLCD(0x01);	//Clear LCD
+	cmdLCD(0x06);	//Entry mode, auto increment with no shift
+}
+/*
+void initLCD(void)
+{
+		SystemCoreClockUpdate();
+		RCC->AHB1ENR|=RCC_AHB1ENR_GPIODEN;	//enable LCD port clock
+	
+	
+			//CONFIG LCD GPIO PINS
+		LCD_PORT->MODER&=~(					//clear pin direction settings
+			(3u<<(2*LCD_RS_pin))
+			|(3u<<(2*LCD_RW_pin))
+			|(3u<<(2*LCD_E_pin))
+			|(0xffff<<(2*LCD_D0_pin))				//CLEAR D0-D7 TO CONFIGURE AS OUTPUTS
+		);
+	
+	
+		LCD_PORT->MODER|=(				//reset pin direction settings to digital outputs
+			(1u<<(2*LCD_RS_pin))
+			|(1u<<(2*LCD_RW_pin))
+			|(1u<<(2*LCD_E_pin))
+			|(0x5555<<(2*LCD_D0_pin))				//SET D0-D7 TO CONFIGURE AS OUTPUTS
+		);
+	
+	LCD_PORT->OTYPER&=~(					//CONFIGURE CONTROL LINES AS PUSH-PULL FOR DIRECT CONTROL
+			(1UL<<(LCD_RS_pin))
+			|(1UL<<(LCD_RW_pin))
+			|(1UL<(LCD_E_pin))
+		);
+		
+	LCD_PORT->OTYPER |= (0xff<<(LCD_D0_pin));				//CONFIGURE D0-D7 AS OPEN-DRAIN FOR DIRECT CONTROL
+	
+	LCD_PORT->PUPDR &= ~(0xffff<<(2*LCD_D0_pin));				//CLEAR D0-D7 TO CONFIGURE AS PULL-UP
+	
+	LCD_PORT->PUPDR |= (0x5555<<(2*LCD_D0_pin));				//SET D0-D7 TO CONFIGURE AS PULL-UP
+
+	
+			//LCD INIT COMMANDS
+	clr_LCD_RS();					//all lines default low
+	clr_LCD_RW();
+	clr_LCD_E();
+	
+	lcd_delayus(25000);		//25ms startup delay
+	cmdLCD(0x38);	//Function set: 2 Line, 8-bit, 5x7 dots
+	cmdLCD(0x0c);	//Display on, Cursor blinking command
+	cmdLCD(0x01);	//Clear LCD
+	cmdLCD(0x06);	//Entry mode, auto increment with no shift
+}*/
+
+
+
+/*
+Demonstrate LCD functionality by performing the following:
+•	The LCD should be interfaced to the Nucleo board using a 4-bit open-drain data bus and push-pull control lines and should monitor the busy flag to allow for reliable communications.
+•	The Heartrate and Oxygen levels should be displayed on the top line of the LCD. Scrolling should be used if the message exceeds the screen length.
+•	The bottom line of the LCD should be used to display the menu system to display the mode and outputs.
+?	Advanced functionality - use of LCD features/graphics such as custom characters or animation are appropriately rewarded.
+*/
