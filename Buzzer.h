@@ -4,7 +4,6 @@
 #define BUZZ_PIN 13
 
 void INIT_BUZZ(void);
-void MUS_NOTES_DELAY(uint32_t s, uint32_t t);
 void TOGGLE_BUZZER(void);
 void NOTE_Fs(uint32_t octaves, int length);
 void NOTE_F(uint32_t octaves, int length);
@@ -17,6 +16,6 @@ void HUMIDITY_BEEP(void);
 void MOVEMENT_BEEP(void);
 void AEOY(void);
 
-void TIM3_Init_Interrupt(void);
-void TIM3_Delay(uint16_t delay_ms, uint32_t t);
+void INIT_TIM3(void);
+void TIM3_DELAY(uint16_t delay_ms, uint32_t t);
 void TIM3_IRQHandler(void);

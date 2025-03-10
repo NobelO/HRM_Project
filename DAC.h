@@ -20,19 +20,17 @@
 void INIT_DAC(void);
 void DAC1_OUTPUT(unsigned short val);
 void DAC2_OUTPUT(unsigned short val);
-void generate_sine_wave(void);
+
+void generateSineWave(void);
+void generateTriangleWave(void);
+void generateComplexWave(void);
+
 void Init_Timer2_1s(void);
 void Init_Timer4_333ms(void);
-void DAC_TIM2_IRQHandler(void);
-void generate_triangular_wave(void);
-
-void generateTriangleWave(void);
 
 void INIT_TIM4(void);
 void INIT_TIM5(void);
 void INIT_TIM6(void);
 void INIT_TIM7(void);
-void DMA1_Stream5_Init(void);
-void DMA1_Stream6_Init(void);
 	
 #endif
