@@ -8,7 +8,7 @@ volatile unsigned int adc_sum = 0;  // Running sum for rolling average
 volatile unsigned char buffer_index = 0; // Tracks current position in buffer
 
 void init_adc (void)
-{
+{ 
 	  //Port and Pin Config
 		RCC->AHB1ENR|=(RCC_AHB1ENR_GPIOCEN);	//GPIOC clock enable
 	  GPIOC->MODER|=(3u<< (2*ADC_Input_Pin_PC3)); //PinC3 set to analogue mode

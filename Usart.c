@@ -1,6 +1,5 @@
 #include "Usart.h"
 
-
 void init_usart(void)
 {
 	
@@ -17,7 +16,7 @@ void init_usart(void)
    USART_PORT->MODER &= ~(
     (3u << (2 * USART_TX_pin)) |  // Clear mode bits for TX pin
     (3u << (2 * USART_RX_pin))    // Clear mode bits for RX pin
-  );
+   );
     USART_PORT->MODER |= (
         (2u << (2 * USART_TX_pin)) | // AF mode for TX
         (2u << (2 * USART_RX_pin))  // AF mode for RX
@@ -30,7 +29,7 @@ void init_usart(void)
     USART_PORT->AFR[URx] |=  (0x07u << (4 * (USART_RX_pin - (URx * 8))));  // set USART as alternate function for RX_pin
 	
   //Enable DMA feature in Usart 3
-//	USART3->CR3 |= USART_CR3_DMAT | USART_CR3_DMAR;  // Enable DMA mode for TX and RX
+ //	USART3->CR3 |= USART_CR3_DMAT | USART_CR3_DMAR;  // Enable DMA mode for TX and RX
 
 
 	USART_MODULE->CR1|=(										//USART CONFIG
@@ -40,8 +39,9 @@ void init_usart(void)
 				);
 		//		NVIC_EnableIRQ(USART3_IRQn);     //enable the TXE handler function
 	//	USART3->BRR = (45000000 /230400);		//BAUDRATE rate set but not EXACT as decimal portion is discarded, it is within the margin of error though
-	
-        USART3->BRR = 45000000 / 230400;
+	// USART3->BRR = 45000000 / BAUDRATE;
+	int temp = (((SystemCoreClock/4)<<5) / (16 * 230400)); //twice BRR needed for LSB accuracy 0.5%
+  USART_MODULE->BRR = (temp>>1) + (temp&0x1);
 	
 	}	 
 

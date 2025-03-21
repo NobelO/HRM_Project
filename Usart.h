@@ -6,7 +6,7 @@
 #define USART_PORT		GPIOD     //USART 3 is GPIOD port
 #define USART_TX_pin	8         //Pin is correct 
 #define USART_RX_pin	9         //Pin is correct
-#define BAUDRATE			9600    //Baud Rate set to 128000
+#define BAUDRATE			230400    //Baud Rate set to 230400
 
 
 void send_usart(unsigned char d);    //Send a byte of data over USART
