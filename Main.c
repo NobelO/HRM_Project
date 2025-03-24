@@ -12,9 +12,13 @@
 #include "Usart.h"
 #include "Delay.h"
 
+#include <stdio.h>
+
 float xg, yg, zg;
 int16_t x,y,z;
 extern uint8_t RxData[6];
+
+//volatile unsigned short BPM;
 
 void TIM2_IRQHandler(void);
 void TIM3_IRQHandler(void);
@@ -133,7 +137,7 @@ int main(void)
 	
 	while (1)
 	{
-		adc_trigger();
+		//adc_trigger();
 		
 		/*
 		ADXL_READ(0x32);
@@ -145,10 +149,17 @@ int main(void)
     yg = y*.0078;
    	zg = z*.0078;
 		*/
-		
+		cmdLCD(LCD_LINE1);					//WRITE ON THE FIRST LCD ROW
 		
 		//putLCD('.');
 		//putStrLCD("Mon");
+		char buffer[10];
+		sprintf(buffer, "%d", BPM);
+		putStrLCD(buffer);
+		
+		cmdLCD(LCD_LINE2);															//WRITE ON THE SECOND LCD ROW, AND IN THE SAME POSITION
+		putStrLCD("Oxygen Lvl: 98zxx%");	
+		
 		wait_us(500000);
 		
 		
