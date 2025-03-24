@@ -64,4 +64,7 @@ void INIT_LCD(void);
 void LCD_Write_String(const char *str);
 void putStrLCD(char *str);
 
+void INIT_TIM14(void);
+void TIM8_TRG_COM_TIM14_IRQHandler(void);
+
 #endif
