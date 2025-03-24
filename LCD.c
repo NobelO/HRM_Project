@@ -160,6 +160,30 @@ void INIT_LCD(void)
 	cmdLCD(0x01);	//Clear LCD
 }
 
+void INIT_TIM14(void)											//LCD TIMER
+{
+	RCC->APB1ENR |= RCC_APB1ENR_TIM14EN;  		//Enable TIM7 clock
+																					//APB clock is Fcy/2 = 180MHz/2 = 90MHz
+	TIM14->PSC = 9000 - 1;   								//Prescaler: 90 MHz / 9000 = 10kHz
+	TIM14->ARR = 10000 - 1;  									//Auto-reload: 10kHz / 10000 = 1Hz = 1s LCD update rate
+	TIM14->DIER|=TIM_DIER_UIE;								//timer uptdate interrupt enabled
+	TIM14->CNT=0;														//zero timer counter
+	NVIC_EnableIRQ(TIM8_TRG_COM_TIM14_IRQn); 							//ENABLE TIM7 IRQ
+	TIM14->CR1|=TIM_CR1_CEN;									//start timer counter
+}
+
+void TIM8_TRG_COM_TIM14_IRQHandler(void)
+{
+	if ((TIM14->SR & TIM_SR_UIF) != 0)   							//Check update interrupt flag
+	{
+		TIM14->SR &= ~TIM_SR_UIF;  											//Clear the flag
+		cmdLCD(LCD_LINE1);															//WRITE ON THE FIRST LCD ROW, AND IN THE SAME POSITION
+		putStrLCD("Heart Rt: 88BPM");
+		//cmdLCD(LCD_LINE2);															//WRITE ON THE SECOND LCD ROW, AND IN THE SAME POSITION
+		//putStrLCD("Oxygen Lvl: 96%");										
+	}
+}
+
 
 
 /*

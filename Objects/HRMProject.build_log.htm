@@ -22,12 +22,58 @@ Dialog DLL:      TCM.DLL V1.56.4.0
  
 <h2>Project:</h2>
 C:\GitHub\PROJ200-clone\HRM_Project\HRMProject.uvprojx
-Project File Date:  03/19/2025
+Project File Date:  03/24/2025
 
 <h2>Output:</h2>
 *** Using Compiler 'V6.22', folder: 'C:\ARM\ARMCLANG\Bin'
 Build target 'Target_1'
-".\Objects\HRMProject.axf" - 0 Error(s), 0 Warning(s).
+Main.c(51): error: type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
+   51 |         INIT_BUZZ();
+      |         ^
+      |         int
+Main.c(51): error: conflicting types for 'INIT_BUZZ'
+.\Buzzer.h(6): note: previous declaration is here
+    6 | void INIT_BUZZ(void);
+      |      ^
+Main.c(55): error: type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
+   55 |         init_adc();
+      |         ^
+      |         int
+Main.c(55): error: conflicting types for 'init_adc'
+.\ADC.h(21): note: previous declaration is here
+   21 | void init_adc (void);
+      |      ^
+Main.c(56): error: type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
+   56 |         init_usart();
+      |         ^
+      |         int
+Main.c(56): error: conflicting types for 'init_usart'
+.\Usart.h(13): note: previous declaration is here
+   13 | void init_usart(void);               //Set the baud rate, GPIO pins and clocks for USART
+      |      ^
+Main.c(57): error: type specifier missing, defaults to 'int'; ISO C99 and later do not support implicit int [-Wimplicit-int]
+   57 |         init_Timer6();
+      |         ^
+      |         int
+Main.c(57): error: conflicting types for 'init_Timer6'
+.\Delay.h(5): note: previous declaration is here
+    5 | void init_Timer6(void);
+      |      ^
+Main.c(59): error: while loop outside of a function
+   59 |                 while(1){
+      |                 ^
+9 errors generated.
+compiling Main.c...
+compiling SPI.c...
+compiling Delay.c...
+compiling system_stm32f4xx.c...
+compiling Switches.c...
+compiling LCD.c...
+compiling Buzzer.c...
+compiling Usart.c...
+compiling ADC.c...
+compiling DAC.c...
+".\Objects\HRMProject.axf" - 9 Error(s), 0 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -53,12 +99,13 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:CORE@6.1.0
 
    * Component: Keil::Device:Startup@2.6.3
-      Source file:   MDK/Device/Source/ARM/STM32F4xx_OTP.s
       Source file:   MDK/Device/Source/ARM/STM32F42xxx_43xxx_OPT.s
+      Source file:   MDK/Device/Source/ARM/STM32F4xx_OTP.s
       Include file:  Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
       Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/arm/startup_stm32f429xx.s
       Source file:   Drivers/CMSIS/Device/ST/STM32F4xx/Source/Templates/system_stm32f4xx.c
-Build Time Elapsed:  00:00:00
+Target not created.
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>

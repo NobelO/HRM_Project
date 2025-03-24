@@ -5,6 +5,7 @@
 #define ADC_Input_Port_PC3   GPIOC //Define GPIOC
 #define ADC_Input_Pin_PC3    3 //Define pin C3 as the pin being configured in the GPIOC Port
 #define ADC_Channel_13		  13 //Define Channel l3 (PULSE_OX)
+//#define SAMPLE_SIZE 90
 
 
 

@@ -6,6 +6,9 @@ char adc_string_PULSE[8] = "0000V";
 volatile unsigned short adc_average[5] = {0}; // Circular buffer for last 5 ADC results
 volatile unsigned int adc_sum = 0;  // Running sum for rolling average
 volatile unsigned char buffer_index = 0; // Tracks current position in buffer
+//volatile unsigned short adc_buffer[SAMPLE_SIZE] = {0};  //Buffer for the ADC sample
+//volatile unsigned char sample_index = 0; //Tracks buffer index
+
 
 void init_adc (void)
 { 
@@ -34,6 +37,8 @@ void init_adc (void)
     ADC1->CR2 |= ADC_CR2_ADON;  // Enable ADC
 	}
 
+	//void init_timer2 
+
 void adc_trigger (void) 
 {
 	ADC1->CR2 |= ADC_CR2_SWSTART; //Start ADC Conversion
@@ -49,6 +54,8 @@ void convert_adc_result(void)
     
     unsigned short integer_part = (unsigned short)(voltage_mv / 1000);
     unsigned short decimal_part = voltage_mv % 1000;
+	
+		
     
     adc_string_PULSE[0] = (char)(integer_part + '0');            // Single digit integer part
     adc_string_PULSE[1] = '.';
@@ -80,3 +87,12 @@ unsigned short get_rolling_average(void)
     return adc_sum / 5; // Compute the rolling average using the stored sum
 }
 
+/*//Transmit sample data via USART
+void send_samples(void)
+{
+    for (int i = 0; i < SAMPLE_SIZE; i++)
+    {
+        send_usart_number(adc_buffer[i]);  // Send ADC value
+        send_usart('\n');
+    }
+}*/
