@@ -179,8 +179,8 @@ void TIM8_TRG_COM_TIM14_IRQHandler(void)
 		TIM14->SR &= ~TIM_SR_UIF;  											//Clear the flag
 		cmdLCD(LCD_LINE1);															//WRITE ON THE FIRST LCD ROW, AND IN THE SAME POSITION
 		putStrLCD("Heart Rt: 88BPM");
-		//cmdLCD(LCD_LINE2);															//WRITE ON THE SECOND LCD ROW, AND IN THE SAME POSITION
-		//putStrLCD("Oxygen Lvl: 96%");										
+		cmdLCD(LCD_LINE2);															//WRITE ON THE SECOND LCD ROW, AND IN THE SAME POSITION
+		putStrLCD("Oxygen Lvl: 96%");										
 	}
 }
 
