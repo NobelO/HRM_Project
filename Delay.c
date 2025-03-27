@@ -24,7 +24,9 @@ void ADC_IRQHandler(void)
 		count += 1;
 		//count = count % 15000;
 		
-		while(count <= 4999)
+		//while(count <= 4999)
+		
+    if(count <= 4999)    // Track max value for thresholding
 		{
 			if(voltage_mv1 > maxVal)
 			{
@@ -34,7 +36,9 @@ void ADC_IRQHandler(void)
 			}
 		}
 		
-		while(count > 4999)
+		//while(count > 4999)
+		
+    if (count > 4999)     // BPM Detection Logic
 		{
 			//Create a variable called state and set as Low
 			
